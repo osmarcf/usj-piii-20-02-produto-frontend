@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1>Produtos</h1>
+        <form>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" class="form-control" name="nome" id="nome" placeholder="Nome" v-model="produto.nome" />
+            </div>
+            <div class="form-group">
+                <label for="nome">Descrição:</label>
+                <input type="text" class="form-control" name="nome" id="nome" placeholder="Descrição" v-model="produto.descricao" />
+            </div>
+            <div class="form-group">
+                <label for="nome">Valor:</label>
+                <input type="text" class="form-control" name="nome" id="nome" placeholder="Valor" v-model="produto.valor" />
+            </div>
+
+            <button class="btn btn-primary" v-on:click.prevent="enviarForm()">Salvar</button>
+        </form>
+
+        <div>
+            <ul v-for="produto in lista">
+                <li>{{produto.nome}} - {{produto.descricao}} - R$ {{produto.valor}}</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        produto: { nome: '', descricao: '', valor: 0.0 },
+        lista: [ ]
+    },
+    methods: {
+        lerTodos: function() {
+            fetch('http://localhost:8080/')
+                .then( (resposta) => resposta.json() )
+                .then( (listaResposta) => {
+                    console.log(listaResposta);
+                    this.lista = listaResposta;
+                });
+        },
+        enviarForm: function () {
+            var headers = new Headers({'Content-type': 'application/json'});
+
+            fetch('http://localhost:8080/cadastrar/',
+                    { method: 'POST', headers, body: JSON.stringify(this.produto) })
+                .then( () => { 
+                    alert('produto cadastrado');
+                    this.lerTodos();
+                }
+            );
+        }
+    },
+    created: function() {
+        console.log('CREATED');
+        this.lerTodos();
+    }
+});
+
+    </script>
+
+    <script src="/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>
